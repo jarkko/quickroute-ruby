@@ -1,11 +1,10 @@
 class Waypoint
-  delegate :last_time, :route, :to => :segment
-  attr_reader :segment
+  attr_reader :segment, :time
 
   def initialize(segment, tag_data, subpos)
     @segment = segment
 
-    if route.has_attribute?(:position))
+    if route.has_attribute?(:position)
       @position = read_long_lat(tag_data[subpos, 8])
       subpos += 8
     end
@@ -26,8 +25,8 @@ class Waypoint
 
     if route.has_attribute?(:heart_rate)
       @heartrate = Uint8be.read(tag_data[subpos, 1])
-      subpos += 1)
-    end]
+      subpos += 1
+    end
 
     if route.has_attribute?(:altitude)
       @altitude = Uint16be.read(tag_data[subpos, 2])
@@ -35,5 +34,13 @@ class Waypoint
     end
 
     subpos += route.extra_waypoints_attributes_length
+  end
+
+  def last_time
+    segment.last_time
+  end
+
+  def route
+    segment.route
   end
 end

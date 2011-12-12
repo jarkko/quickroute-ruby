@@ -1,6 +1,23 @@
-# encoding: US-ASCII
-#
-#
+TAGS = {
+  :version => 1,
+  :map_corner_positions => 2,
+  :image_corner_positions => 3,
+  :map_location_and_size_in_pixels => 4,
+  :sessions => 5,
+  :session => 6,
+  :route => 7,
+  :handles => 8,
+  :projection_origin => 9,
+  :laps => 10,
+  :session_info => 11
+}
+
+WAYPOINT_ATTRIBUTES = {
+  :position => 1,
+  :time => 2,
+  :heart_rate => 4,
+  :altitude => 8
+}
 
 class String
   def to_b
@@ -9,28 +26,8 @@ class String
 end
 
 class QuickrouteJpegParser
+  include TagDataExtractor
   include BinData
-
-  TAGS = {
-    :version => 1,
-    :map_corner_positions => 2,
-    :image_corner_positions => 3,
-    :map_location_and_size_in_pixels => 4,
-    :sessions => 5,
-    :session => 6,
-    :route => 7,
-    :handles => 8,
-    :projection_origin => 9,
-    :laps => 10,
-    :session_info => 11
-  }
-
-  WAYPOINT_ATTRIBUTES = {
-    :position => 1,
-    :time => 2,
-    :heart_rate => 4,
-    :altitude => 8
-  }
 
   def initialize(filename, calculate)
     @map_corner_positions = {}
@@ -68,10 +65,10 @@ class QuickrouteJpegParser
                 data << f.read(length - 12)
                 quickroute_segment = true
               else
-                f.seek(length - 12, IO::SEEK_CUR)
+                f.seek(length - 12, ::IO::SEEK_CUR)
               end
             else
-              f.seek(length - 2, IO::SEEK_CUR)
+              f.seek(length - 2, ::IO::SEEK_CUR)
             end
 
             break if !quickroute_segment && !data.empty?
@@ -86,13 +83,15 @@ class QuickrouteJpegParser
   end
 
   def process_data(data)
+    puts "Starting to process data"
     length = data.length
 
     pos = 0
 
     while pos < length
-      tag, tag_data, tag_data_length = extract_tag_data(data, pos)
-
+      puts "pos: #{pos}"
+      tag, tag_data, tag_data_length, pos = extract_tag_data(data, pos)
+      puts "tag: #{tag.inspect}, tag_data: #{tag_data.inspect}, tag_data_length: #{tag_data_length}"
       read_tag(tag, tag_data)
     end
   end
@@ -100,12 +99,16 @@ class QuickrouteJpegParser
   def read_tag(tag, tag_data)
     case tag
     when TAGS[:version]
+      puts "Reading version number"
       @version = version_number(tag_data)
     when TAGS[:map_corner_positions]
+      puts "Reading map corner positions"
       @map_corner_positions = corner_positions(tag_data)
     when TAGS[:image_corner_positions]
+      puts "Reading image corner number"
       @image_corner_positions = corner_positions(tag_data)
     when TAGS[:map_location_and_size_in_pixels]
+      puts "Reading map location and size"
       @map_location_and_size_in_pixels = Rectangle.from_tag_data(tag_data)
     when TAGS[:sessions]
       @sessions = read_sessions(tag_data)
@@ -119,7 +122,7 @@ class QuickrouteJpegParser
     data_length = data.length
 
     session_count.times do |i|
-      tag, tag_data, tag_data_length = extract_tag_data(data, pos)
+      tag, tag_data, tag_data_length, pos = extract_tag_data(data, pos)
 
       if tag == TAGS[:session]
         sessions << read_session(tag_data)
@@ -128,28 +131,7 @@ class QuickrouteJpegParser
   end
 
   def read_session(data)
-    session = Session.new
-
-    pos = 0
-    while pos < data.length
-      tag, tag_data, tag_data_length = extract_tag_data(data, pos)
-
-      case tag
-      when TAGS[:route]
-        session.route = Route.new(tag_data)
-      end
-    end
-  end
-
-  def extract_tag_data(data, pos)
-    tag = BinData::Uint8be.read(data[pos,1])
-    pos += 1
-    tag_data_length = BinData::Uint32le.read(data[pos, 4])
-    pos += 4
-    tag_data = data[pos, tag_data_length]
-    pos += tag_data_length)
-
-    tag, tag_data, tag_data_length
+    Session.new(data)
   end
 
   def corner_positions(tag_data)
