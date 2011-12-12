@@ -1,12 +1,9 @@
 class SessionInfo
-  def initialize(tag_data)
-    subpos = 0
-    @person = Person.new(tag_data, subpos)
+  def initialize(data)
+    @person = Person.new(data)
 
-    length = Uint16be.read(tag_data[subpos,2])
-    subpos += 2
+    length = Uint16be.read(data)
 
-    @description = BinData::String.read(tag_data[subpos, length])
-    subpos += length
+    @description = BinData::String.read(data, :length => length)
   end
 end

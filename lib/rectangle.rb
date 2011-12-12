@@ -1,12 +1,12 @@
 class Rectangle
   attr_reader :x, :y, :width, :height
 
-  def self.from_tag_data(tag_data)
+  def self.from_tag_data(data)
     new(
-      BinData::Uint16be::read(tag_data[0,2]),
-      BinData::Uint16be::read(tag_data[2,2]),
-      BinData::Uint16be::read(tag_data[4,2]),
-      BinData::Uint16be::read(tag_data[6,2])
+      BinData::Uint16be::read(data),
+      BinData::Uint16be::read(data),
+      BinData::Uint16be::read(data),
+      BinData::Uint16be::read(data)
     )
   end
 

@@ -1,28 +1,23 @@
 class Handle
-  def initialize(tag_data, subpos)
+  def initialize(data)
     @transformation_matrix = Matrix.new(3,3)
     3.times do |j|
       3.times do |k|
-        value = DoubleBe.read(tag_data[subpos, 8])
+        value = DoubleBe.read(data)
         @transformation_matrix.set_element(j, k, value)
-        subpos += 8
       end
     end
 
     @parameterized_location = ParameterizedLocation.new
-    @parameterized_location.segment_index = Uint32be.read(tag_data[subpos, 4])
-    subpos += 4
-    @parameterized_location.value = DoubleBe.read(tag_data[subpos, 8])
-    subpos += 8
+    @parameterized_location.segment_index = Uint32be.read(data)
+    @parameterized_location.value = DoubleBe.read(data)
 
     # pixel location
     @pixel_location = Point.new(
-      DoubleBe.read(tag_data[subpos, 8]),
-      DoubleBe.read(tag_data[(subpos += 8), 8])
+      DoubleBe.read(data),
+      DoubleBe.read(data)
     )
-    subpos += 8
 
-    @type = Int16be.read(tag_data[subpos, 2])
-    subpos += 2
+    @type = Int16be.read(data)
   end
 end

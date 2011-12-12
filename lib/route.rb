@@ -1,19 +1,15 @@
 class Route
   attr_reader :attributes, :extra_waypoints_attributes_length
 
-  def initialize(tag_data)
+  def initialize(data)
     @segments = []
 
-    subpos = 0
-    @attributes = BinData::Uint16be.read(tag_data[subpos, 2])
-    subpos += 2
-    @extra_waypoints_attributes_length = BinData::Uint16be.read(tag_data[subpos, 2])
-    subpos += 2
-    segment_count = BinData::Uint32be.read(tag_data[subpos, 4])
-    subpos += 4
+    @attributes = BinData::Uint16be.read(data)
+    @extra_waypoints_attributes_length = BinData::Uint16be.read(data)
+    segment_count = BinData::Uint32be.read(data)
 
     segment_count.times do |i|
-      segment = RouteSegment.new(self, tag_data, subpos)
+      segment = RouteSegment.new(self, data)
 
       segments << segment
     end
