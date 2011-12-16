@@ -28,6 +28,7 @@ end
 class QuickrouteJpegParser
   include TagDataExtractor
   include BinData
+  attr_reader :sessions
 
   def initialize(filename, calculate)
     @map_corner_positions = {}
@@ -83,12 +84,12 @@ class QuickrouteJpegParser
   end
 
   def process_data(data)
-    puts "Starting to process data"
+    LOGGER.debug "Starting to process data"
     data = StringIO.new(data)
 
     while !data.eof?
       tag, tag_data_length = extract_tag_data(data)
-      puts "tag: #{tag.inspect}, tag length: #{tag_data_length.inspect}"
+      LOGGER.debug "tag: #{tag.inspect}, tag length: #{tag_data_length.inspect}"
       read_tag(tag, data)
     end
   end
@@ -96,21 +97,21 @@ class QuickrouteJpegParser
   def read_tag(tag, data)
     case tag
     when TAGS[:version]
-      puts "Reading version number"
+      LOGGER.debug "Reading version number"
       @version = version_number(data)
-      puts "version is: #{@version}"
+      LOGGER.debug "version is: #{@version}"
     when TAGS[:map_corner_positions]
-      puts "Reading map corner positions:"
+      LOGGER.debug "Reading map corner positions:"
       @map_corner_positions = corner_positions(data)
-      puts "#{@map_corner_positions.inspect}"
+      LOGGER.debug "#{@map_corner_positions.inspect}"
     when TAGS[:image_corner_positions]
-      puts "Reading image corner number"
+      LOGGER.debug "Reading image corner number"
       @image_corner_positions = corner_positions(data)
-      puts "#{@image_corner_positions.inspect}"
+      LOGGER.debug "#{@image_corner_positions.inspect}"
     when TAGS[:map_location_and_size_in_pixels]
-      puts "Reading map location and size"
-      @map_location_and_size_in_pixels = Rectangle.from_tag_data(data)
-      puts "#{@map_location_and_size_in_pixels.inspect}"
+      LOGGER.debug "Reading map location and size"
+      @map_location_and_size_in_pixels = Rectangle.read(data)
+      LOGGER.debug "#{@map_location_and_size_in_pixels.inspect}"
     when TAGS[:sessions]
       @sessions = read_sessions(data)
     end
@@ -119,12 +120,12 @@ class QuickrouteJpegParser
   def read_sessions(data)
     sessions = []
     session_count = BinData::Uint32le.read(data)
-    puts "reading #{session_count} sessions"
+    LOGGER.debug "reading #{session_count} sessions"
 
     session_count.times do |i|
       tag, tag_data_length = extract_tag_data(data)
 
-      puts "in session #{i}, tag is #{tag} and is #{tag_data_length} bytes long"
+      LOGGER.debug "in session #{i}, tag is #{tag} and is #{tag_data_length} bytes long"
 
       if tag == TAGS[:session]
         sessions << read_session(data, tag_data_length)

@@ -6,21 +6,21 @@ class Handle
     @transformation_matrix = Matrix.build(3,3) do
       DoubleLe.read(data)
     end
-    puts "matrix is #{@transformation_matrix.inspect}"
+    LOGGER.debug "matrix is #{@transformation_matrix.inspect}"
     @parameterized_location = ParameterizedLocation.new(
       BinData::Uint32le.read(data),
       DoubleLe.read(data)
     )
-    puts "parameterized location is #{@parameterized_location.inspect}"
+    LOGGER.debug "parameterized location is #{@parameterized_location.inspect}"
 
     # pixel location
     @pixel_location = Point.new(
       DoubleLe.read(data),
       DoubleLe.read(data)
     )
-    puts "pixel_location is #{@pixel_location.inspect}"
+    LOGGER.debug "pixel_location is #{@pixel_location.inspect}"
 
     @type = BinData::Int16le.read(data)
-    puts "handle type is #{@type}"
+    LOGGER.debug "handle type is #{@type}"
   end
 end

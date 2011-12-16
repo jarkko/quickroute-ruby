@@ -1,16 +1,17 @@
 class RouteSegment
   attr_accessor :route, :last_time
+  attr_reader :waypoints
 
   def initialize(route, data)
-    puts "Initializing route segment"
+    LOGGER.debug "Initializing route segment"
     @route = route
 
-    waypoints = []
+    @waypoints = []
     waypoint_count = BinData::Uint32le.read(data)
-    puts "reading #{waypoint_count} waypoints"
+    LOGGER.debug "reading #{waypoint_count} waypoints"
     waypoint_count.times do |j|
       waypoint = Waypoint.new(self, data)
-      waypoints << waypoint
+      @waypoints << waypoint
       @last_time = waypoint.time
     end
   end
