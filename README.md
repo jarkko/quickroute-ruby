@@ -1,4 +1,4 @@
-= QuickRoute JPEG Parser for Ruby
+# QuickRoute JPEG Parser for Ruby
 
 Parses the GPS data embedded to JPEG files output by [QuickRoute](http://www.matstroeng.se/quickroute/en/).
 
