@@ -3,10 +3,10 @@ class Rectangle
 
   def self.from_tag_data(data)
     new(
-      BinData::Uint16be::read(data),
-      BinData::Uint16be::read(data),
-      BinData::Uint16be::read(data),
-      BinData::Uint16be::read(data)
+      BinData::Uint16le::read(data),
+      BinData::Uint16le::read(data),
+      BinData::Uint16le::read(data),
+      BinData::Uint16le::read(data)
     )
   end
 

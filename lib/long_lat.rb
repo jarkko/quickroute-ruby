@@ -7,8 +7,8 @@ class LongLat
 
   def self.from_data(data)
     new(
-      BinData::Int32be.read(data) / 3600000,
-      BinData::Int32be.read(data) / 3600000
+      BinData::Int32le.read(data) / 3600000.0,
+      BinData::Int32le.read(data) / 3600000.0
     )
   end
 end

@@ -1,11 +1,14 @@
 class Person
   def initialize(data)
-    length = Uint16be.read(data)
-    @name = BinData::String.read(data, :length => length)
+    length = BinData::Uint16le.read(data)
+    puts "person length is #{length}"
+    @name = BinData::String.new(:length => length).read(data)
+    puts "person name is #{@name}"
+    length = BinData::Uint16le.read(data)
+    puts "club length is #{length}"
+    @club = BinData::String.new(:length => length).read(data)
 
-    length = Uint16be.read(data)
-    @club = BinData::String.read(data, :length => length)
-
-    @id = Uint32be.read(data)
+    @id = BinData::Uint32be.read(data)
+    puts "id is #{@id}"
   end
 end

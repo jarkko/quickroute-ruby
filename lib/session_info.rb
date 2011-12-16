@@ -2,8 +2,8 @@ class SessionInfo
   def initialize(data)
     @person = Person.new(data)
 
-    length = Uint16be.read(data)
-
-    @description = BinData::String.read(data, :length => length)
+    length = BinData::Uint16le.read(data)
+    puts "description length is #{length}"
+    @description = BinData::String.new(:length => length).read(data)
   end
 end

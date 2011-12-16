@@ -1,23 +1,26 @@
-class Handle
-  def initialize(data)
-    @transformation_matrix = Matrix.new(3,3)
-    3.times do |j|
-      3.times do |k|
-        value = DoubleBe.read(data)
-        @transformation_matrix.set_element(j, k, value)
-      end
-    end
+require 'matrix'
 
-    @parameterized_location = ParameterizedLocation.new
-    @parameterized_location.segment_index = Uint32be.read(data)
-    @parameterized_location.value = DoubleBe.read(data)
+class Handle
+  include BinData
+  def initialize(data)
+    @transformation_matrix = Matrix.build(3,3) do
+      DoubleLe.read(data)
+    end
+    puts "matrix is #{@transformation_matrix.inspect}"
+    @parameterized_location = ParameterizedLocation.new(
+      BinData::Uint32le.read(data),
+      DoubleLe.read(data)
+    )
+    puts "parameterized location is #{@parameterized_location.inspect}"
 
     # pixel location
     @pixel_location = Point.new(
-      DoubleBe.read(data),
-      DoubleBe.read(data)
+      DoubleLe.read(data),
+      DoubleLe.read(data)
     )
+    puts "pixel_location is #{@pixel_location.inspect}"
 
-    @type = Int16be.read(data)
+    @type = BinData::Int16le.read(data)
+    puts "handle type is #{@type}"
   end
 end
