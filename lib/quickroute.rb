@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'bindata'
 require "logger"
+require 'binary_search/pure'
 
 require_relative 'string_extensions'
 require_relative 'tag_data_extractor'

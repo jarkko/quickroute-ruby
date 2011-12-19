@@ -15,4 +15,8 @@ class RouteSegment
       @last_time = waypoint.time
     end
   end
+
+  def index
+    @route.segments.index(self)
+  end
 end

@@ -2,7 +2,8 @@ class Session
   include BinData
 
   attr_reader :laps, :handles, :route,
-    :projection_origin, :session_info
+    :projection_origin, :session_info,
+    :straight_line_distance
 
   def self.read_sessions(data)
     sessions = []
@@ -28,8 +29,32 @@ class Session
   def initialize(data, tag_data_length)
     @laps = []
     @handles = []
+    @straight_line_distance = 0
     LOGGER.debug "Reading new session"
     parse_data(data, tag_data_length)
+  end
+
+  def calculate_laps
+    last_distance = 0
+
+    @laps.each do |lap|
+      pl = route.parameterized_location_from_time(lap.time)
+      lap.position = route.position_from_parameterized_location(pl)
+
+      distance = route.distance_from_parameterized_location(pl)
+      if lap.is_of_type?(LAP_TYPE_LAP, LAP_TYPE_STOP)
+        lap.distance = distance - last_distance
+
+        if last_lap
+          lap.straight_line_distance = lap.position.distance_to(last_lap.position)
+        else
+          lap.straight_line_distance = 0
+        end
+        @straight_line_distance += lap.straight_line_distance
+      end
+      last_distance = distance
+      last_lap = lap
+    end
   end
 
   private
