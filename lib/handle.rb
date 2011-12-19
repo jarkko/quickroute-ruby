@@ -1,6 +1,11 @@
 require 'matrix'
 
 class Handle
+  attr_reader :transformation_matrix,
+              :parameterized_location,
+              :pixel_location,
+              :type
+
   include BinData
   def initialize(data)
     @transformation_matrix = Matrix.build(3,3) do

@@ -1,4 +1,6 @@
 class SessionInfo
+  attr_reader :person
+
   def initialize(data)
     @person = Person.new(data)
 

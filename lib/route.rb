@@ -1,4 +1,11 @@
 class Route
+  WAYPOINT_ATTRIBUTES = {
+    :position => 1,
+    :time => 2,
+    :heart_rate => 4,
+    :altitude => 8
+  }
+
   attr_reader :attributes, :extra_waypoints_attributes_length,
     :segments
 

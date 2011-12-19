@@ -12,22 +12,10 @@ TAGS ={
   11 => :session_info
 }
 
-WAYPOINT_ATTRIBUTES = {
-  :position => 1,
-  :time => 2,
-  :heart_rate => 4,
-  :altitude => 8
-}
-
-class String
-  def to_b
-    BinData::String.new(self).to_binary_s
-  end
-end
-
 class QuickrouteJpegParser
   include BinData
-  attr_reader :sessions
+  attr_reader :sessions, :map_corner_positions, :image_corner_positions,
+              :map_location_and_size_in_pixels, :version
 
   def initialize(filename, calculate)
     @map_corner_positions = {}

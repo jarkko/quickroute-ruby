@@ -23,7 +23,7 @@ require_relative 'rectangle'
 require_relative 'quickroute_jpeg_parser'
 
 LOGGER = Logger.new(STDOUT)
-LOGGER.level = Logger::DEBUG
+LOGGER.level = Logger::WARN
 
 #@filename = "../2010-ankkurirastit.jpg"
 #@f = File.open(@filename, 'r')

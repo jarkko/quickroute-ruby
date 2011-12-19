@@ -1,4 +1,6 @@
 class Person
+  attr_reader :name, :club, :id
+
   def initialize(data)
     length = BinData::Uint16le.read(data)
     LOGGER.debug "person length is #{length}"
