@@ -1,6 +1,6 @@
 require_relative '../spec_helper'
 
-describe "Parsing existing jpg file" do
+describe "Parsing existing jpg file without calculation" do
   before(:all) do
     @filename = File.join(File.expand_path(File.dirname(__FILE__)),
                           '../../2010-Ankkurirastit.jpg')
@@ -78,6 +78,21 @@ describe "Parsing existing jpg file" do
           end
         end
       end
+    end
+  end
+end
+
+describe "Parsing existing jpg file with calculation" do
+  before(:all) do
+    @filename = File.join(File.expand_path(File.dirname(__FILE__)),
+                          '../../2010-Ankkurirastit.jpg')
+
+    @qp = QuickrouteJpegParser.new(File.join(@filename), true)
+  end
+
+  describe "session" do
+    it "should have correct straight line distance" do
+      @qp.sessions.first.straight_line_distance.should == 69.0
     end
   end
 end

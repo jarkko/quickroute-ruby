@@ -13,33 +13,23 @@ class LongLat
   end
 
   def distance_to(other)
-    sin_phi0 = sin_phi
-    cos_phi0 = cos_phi
-    sin_theta0 = sin_theta
-    cos_theta0 = cos_theta
-
-    sin_phi1 = other.sin_phi
-    cos_phi1 = other.cos_phi
-    sin_theta1 = other.sin_theta
-    cos_theta1 = other.cos_theta
-
-    p0 = Matrix[[rho * sin_phi0 * cos_theta0,
-                 rho * sin_phi0 * sin_theta0
-                 rho * cos_phi0]]
-
-    p1 = Matrix[[rho * sin_phi1 * cos_theta1,
-                 rho * sin_phi1 * sin_theta1
-                 rho * cos_phi1]]
-
-    distance_point_to_point(p0, p1)
+    distance_point_to_point(point_matrix, other.point_matrix)
   end
 
+  def point_matrix
+    Matrix[[rho * sin_phi * cos_theta],
+           [rho * sin_phi * sin_theta],
+           [rho * cos_phi]]
+  end
+
+  private
+
   def sin_phi
-    Math::sin(0.5 * Math::PI + latitude / 180 * Math::PI))
+    Math::sin(0.5 * Math::PI + latitude / 180 * Math::PI)
   end
 
   def cos_phi
-    Math::cos(0.5 * Math::PI + latitude / 180 * Math::PI))
+    Math::cos(0.5 * Math::PI + latitude / 180 * Math::PI)
   end
 
   def sin_theta
@@ -50,9 +40,9 @@ class LongLat
     Math::cos(longitude / 180 * Math::PI)
   end
 
-  private
-
   def distance_point_to_point(p0, p1)
-   
+    sum = 0
+    p0.each_with_index{|el, row, col| sum += (p1[row][col] - el)**2}
+    Math.sqrt(sum)
   end
 end

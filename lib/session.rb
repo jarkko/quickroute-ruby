@@ -1,7 +1,7 @@
 class Session
   include BinData
-
-  attr_reader :laps, :handles, :route,
+  attr_accessor :route
+  attr_reader :laps, :handles,
     :projection_origin, :session_info,
     :straight_line_distance
 
@@ -11,27 +11,31 @@ class Session
     LOGGER.debug "reading #{session_count} sessions"
 
     session_count.times do |i|
-      tag, tag_data_length = TagDataExtractor.extract_tag_data(data)
+      tag = TagDataExtractor.read(data)
 
-      LOGGER.debug "in session #{i}, tag is #{tag} and is #{tag_data_length} bytes long"
+      LOGGER.debug "in session #{i}, tag is #{tag} and is #{tag.data_length} bytes long"
 
-      if TAGS[tag] == :session
-        sessions << read_session(data, tag_data_length)
+      if TAGS[tag.tag] == :session
+        sessions << read_session(data, tag.data_length)
       end
     end
     sessions
   end
 
   def self.read_session(data, tag_data_length)
-    new(data, tag_data_length)
+    new.parse_data(data, tag_data_length)
   end
 
-  def initialize(data, tag_data_length)
+  def initialize
     @laps = []
     @handles = []
     @straight_line_distance = 0
     LOGGER.debug "Reading new session"
-    parse_data(data, tag_data_length)
+  end
+
+  def calculate
+    route.calculate_parameters
+    calculate_laps
   end
 
   def calculate_laps
@@ -42,7 +46,7 @@ class Session
       lap.position = route.position_from_parameterized_location(pl)
 
       distance = route.distance_from_parameterized_location(pl)
-      if lap.is_of_type?(LAP_TYPE_LAP, LAP_TYPE_STOP)
+      if lap.is_of_type?(:lap, :stop)
         lap.distance = distance - last_distance
 
         if last_lap
@@ -57,22 +61,23 @@ class Session
     end
   end
 
-  private
-
   def parse_data(data, tag_data_length)
     start_pos = data.pos
     while data.pos < (start_pos + tag_data_length)
-      tag, data_length = TagDataExtractor.extract_tag_data(data)
+      tag = TagDataExtractor.read(data)
 
-      LOGGER.debug "tag is #{tag}, #{data_length} bytes"
+      LOGGER.debug "tag is #{tag}, #{tag.data_length} bytes"
 
-      send("set_#{TAGS[tag]}", data)
+      send("set_#{TAGS[tag.tag]}", data)
     end
+    self
   end
+
+  private
 
   def set_route(data)
     LOGGER.debug "reading route"
-    @route = Route.new(data)
+    @route = Route.new.read_data(data)
   end
 
   def set_handles(data)

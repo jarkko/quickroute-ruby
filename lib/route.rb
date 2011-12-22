@@ -11,15 +11,20 @@ class Route
   attr_reader :attributes, :extra_waypoints_attributes_length,
     :segments
 
-  def initialize(data)
+  def self.from_data(data)
+    new.read_data(data)
+  end
+
+  def initialize
     LOGGER.debug "initializing new route"
     @segments = []
+  end
 
+  def read_data(data)
     @attributes = BinData::Uint16le.read(data)
-
     @extra_waypoints_attributes_length = BinData::Uint16be.read(data)
-
     read_segments_from(data)
+    self
   end
 
   def has_attribute?(attribute)

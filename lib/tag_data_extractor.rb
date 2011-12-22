@@ -1,8 +1,5 @@
-module TagDataExtractor
-  def self.extract_tag_data(data)
-    tag = BinData::Uint8be.read(data)
-    tag_data_length = BinData::Uint32le.read(data)
-
-    [tag, tag_data_length]
-  end
+class TagDataExtractor < BinData::Record
+  endian  :little
+  uint8be :tag
+  uint32  :data_length
 end

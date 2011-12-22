@@ -36,6 +36,10 @@ class QuickrouteJpegParser
 
   private
 
+  def calculate_data
+    sessions.each{|s| s.calculate}
+  end
+
   def fetch_data_from(filename)
     JpegReader.fetch_data_from(filename)
   end
@@ -45,14 +49,14 @@ class QuickrouteJpegParser
     data = StringIO.new(data)
 
     while !data.eof?
-      tag, tag_data_length = TagDataExtractor.extract_tag_data(data)
-      LOGGER.debug "tag: #{tag.inspect}, tag length: #{tag_data_length.inspect}"
+      tag = TagDataExtractor.read(data)
+      LOGGER.debug "tag: #{tag.inspect}, tag length: #{tag.data_length.inspect}"
       read_tag(tag, data)
     end
   end
 
   def read_tag(tag, data)
-    send("set_#{TAGS[tag]}", data)
+    send("set_#{TAGS[tag.tag]}", data)
   end
 
   def set_version(data)
