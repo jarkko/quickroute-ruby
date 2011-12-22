@@ -39,7 +39,7 @@ class Session
   end
 
   def calculate_laps
-    last_distance = 0
+    last_distance, last_lap = 0, nil
 
     @laps.each do |lap|
       pl = route.parameterized_location_from_time(lap.time)
@@ -49,7 +49,7 @@ class Session
       if lap.is_of_type?(:lap, :stop)
         lap.distance = distance - last_distance
 
-        if last_lap
+        if @last_lap
           lap.straight_line_distance = lap.position.distance_to(last_lap.position)
         else
           lap.straight_line_distance = 0

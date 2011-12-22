@@ -9,7 +9,7 @@ class Route
   }
 
   attr_reader :attributes, :extra_waypoints_attributes_length,
-    :segments
+    :segments, :distance, :elapsed_time
 
   def self.from_data(data)
     new.read_data(data)
@@ -18,6 +18,8 @@ class Route
   def initialize
     LOGGER.debug "initializing new route"
     @segments = []
+    @distance = 0
+    @elapsed_time = 0
   end
 
   def read_data(data)
@@ -29,6 +31,10 @@ class Route
 
   def has_attribute?(attribute)
     0 != (attributes & WAYPOINT_ATTRIBUTES[attribute])
+  end
+
+  def calculate_parameters
+    segments.each{|s| s.calculate_waypoints}
   end
 
   def parameterized_location_from_time(time)
@@ -94,6 +100,14 @@ class Route
     t = location.value - value
 
     [waypoints[value], waypoints[value + 1], t]
+  end
+
+  def add_distance(dist)
+    @distance += dist
+  end
+
+  def add_elapsed_time(time)
+    @elapsed_time += time
   end
 
   private

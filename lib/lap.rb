@@ -6,10 +6,15 @@ class Lap
   }
 
   attr_reader :time, :type
+  attr_accessor :position, :distance, :straight_line_distance
 
   include DateTimeParser
 
-  def initialize(data)
+  def initialize(data = nil)
+    read_data(data) if data
+  end
+
+  def read_data(data)
     @time = read_date_time(data)
     @type = BinData::Uint8be.read(data)
   end

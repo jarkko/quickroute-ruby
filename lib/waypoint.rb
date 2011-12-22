@@ -2,11 +2,16 @@ class Waypoint
   include BinData
   include DateTimeParser
 
-  attr_reader :segment, :time, :position, :heart_rate, :altitude
+  attr_reader :segment, :time, :heart_rate, :altitude
+  attr_accessor :distance, :position, :elapsed_time
 
-  def initialize(segment, data)
+  def initialize(segment, data = nil)
     @segment = segment
+    @distance = 0
+    read_data(data) if data
+  end
 
+  def read_data(data)
     if route.has_attribute?(:position)
       LOGGER.debug "route did have the position attribute"
       @position = LongLat.from_data(data)
@@ -36,7 +41,7 @@ class Waypoint
       LOGGER.debug "altitude was #{@altitude}"
     end
 
-    data.seek(route.extra_waypoints_attributes_length, ::IO::SEEK_CUR)
+    data.seek(route.extra_waypoints_attributes_length, ::IO::SEEK_CUR)    
   end
 
   def last_time
@@ -45,5 +50,9 @@ class Waypoint
 
   def route
     segment.route
+  end
+
+  def distance_to(other)
+    position.distance_to(other.position)
   end
 end
