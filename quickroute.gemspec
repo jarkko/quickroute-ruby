@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'quickroute'
-  s.version     = '0.1.0'
+  s.version     = '0.1.1'
   s.date        = '2012-01-02'
   s.summary     = "Parser library for QuickRoute JPG files with embedded route data"
   s.description = "Library for parsing the GPS data embedded to JPG files by QuickRoute (http://www.matstroeng.se/quickroute/en/)."
