@@ -1,6 +1,4 @@
 class Route
-  EPSILON = 0.001
-
   WAYPOINT_ATTRIBUTES = {
     :position => 1,
     :time => 2,
@@ -39,31 +37,7 @@ class Route
 
   def parameterized_location_from_time(time)
     return unless segment = segment_for_time(time)
-
-    lower, upper = 0, segment.waypoints.size - 1
-
-    # Binary search to find the closest waypoint
-    while lower <= upper
-      idx = lower + (upper - lower) / 2
-      currtime = segment.waypoints[idx].time
-      if (time - currtime).abs < EPSILON
-        return ParameterizedLocation.new(segment.index, idx)
-      end
-
-      if time < currtime
-        upper = idx - 1
-      else
-        lower = idx + 1
-      end
-    end
-
-    t0 = segment.waypoints[upper].time
-    t1 = segment.waypoints[lower].time
-    if t1 == t0
-      return ParameterizedLocation.new(segment.index, upper)
-    end
-
-    ParameterizedLocation.new(segment.index, upper + (time - t0) / (t1 - t0))
+    segment.parameterized_location_from_time(time)
   end
 
   def position_from_parameterized_location(location)
@@ -93,13 +67,11 @@ class Route
       value = waypoints.size - 2
     end
 
-    if waypoints.size < 2
-      return [waypoints[0], waypoints[0], 0]
-    end
-
     t = location.value - value
 
-    [waypoints[value], waypoints[value + 1], t]
+    waypoints.size < 2 ?
+      [waypoints[0], waypoints[0], 0] :
+      [waypoints[value], waypoints[value + 1], t]
   end
 
   def add_distance(dist)
@@ -113,9 +85,7 @@ class Route
   private
 
   def segment_for_time(time)
-    segment = segments.find do |s|
-      ((s.waypoints.first.time - EPSILON)..(s.waypoints.last.time + EPSILON)).include?(time)
-    end
+    segments.find{|s| s.has_time?(time) }
   end
 
   def read_segments_from(data)

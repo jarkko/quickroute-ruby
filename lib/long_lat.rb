@@ -1,4 +1,7 @@
 class LongLat
+  # earth radius in meters
+  RHO = 6378200
+
   attr_accessor :longitude, :latitude
 
   def initialize(longitude, latitude)
@@ -17,9 +20,9 @@ class LongLat
   end
 
   def point_matrix
-    Matrix[[rho * sin_phi * cos_theta],
-           [rho * sin_phi * sin_theta],
-           [rho * cos_phi]]
+    Matrix[[RHO * sin_phi * cos_theta],
+           [RHO * sin_phi * sin_theta],
+           [RHO * cos_phi]]
   end
 
   private
@@ -42,7 +45,9 @@ class LongLat
 
   def distance_point_to_point(p0, p1)
     sum = 0
-    p0.each_with_index{|el, row, col| sum += (p1[row][col] - el)**2}
+    p0.each_with_index do |el, row, col|
+      sum += ((p1[row, col] - el)**2)
+    end
     Math.sqrt(sum)
   end
 end

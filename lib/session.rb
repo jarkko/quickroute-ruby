@@ -34,6 +34,7 @@ class Session
   end
 
   def calculate
+    LOGGER.debug("starting to calculate shit for #{self.inspect}")
     route.calculate_parameters
     calculate_laps
   end
@@ -49,7 +50,7 @@ class Session
       if lap.is_of_type?(:lap, :stop)
         lap.distance = distance - last_distance
 
-        if @last_lap
+        if last_lap
           lap.straight_line_distance = lap.position.distance_to(last_lap.position)
         else
           lap.straight_line_distance = 0
@@ -59,6 +60,8 @@ class Session
       last_distance = distance
       last_lap = lap
     end
+
+    LOGGER.debug("Laps after calculation: #{@laps.inspect}")
   end
 
   def parse_data(data, tag_data_length)

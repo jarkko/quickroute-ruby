@@ -11,11 +11,6 @@ describe Route do
       @it.stub(:segments).and_return([@segment])
     end
 
-    # it "should calculate total distance and elapsed time" do
-    #   @it.distance.should == 69
-    #   @it.elapsed_time.should == 1200
-    # end
-
     it "should calculate total distance for each segment" do
       @segment.should_receive(:calculate_waypoints)
       @it.calculate_parameters

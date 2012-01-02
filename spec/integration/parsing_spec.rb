@@ -3,7 +3,7 @@ require_relative '../spec_helper'
 describe "Parsing existing jpg file without calculation" do
   before(:all) do
     @filename = File.join(File.expand_path(File.dirname(__FILE__)),
-                          '../../2010-Ankkurirastit.jpg')
+                          '../fixtures/2010-Ankkurirastit.jpg')
 
     @qp = QuickrouteJpegParser.new(File.join(@filename), false)
   end
@@ -85,14 +85,24 @@ end
 describe "Parsing existing jpg file with calculation" do
   before(:all) do
     @filename = File.join(File.expand_path(File.dirname(__FILE__)),
-                          '../../2010-Ankkurirastit.jpg')
+                          '../fixtures/2010-Ankkurirastit.jpg')
 
     @qp = QuickrouteJpegParser.new(File.join(@filename), true)
   end
 
   describe "session" do
     it "should have correct straight line distance" do
-      @qp.sessions.first.straight_line_distance.should == 69.0
+      @qp.sessions.first.straight_line_distance.round.should == 6750
+    end
+  end
+
+  describe "route" do
+    it "should have correct distance" do
+      @qp.sessions.first.route.distance.round.should == 7566
+    end
+
+    it "should have correct elapsed time" do
+      @qp.sessions.first.route.elapsed_time.should == 2706.0
     end
   end
 end

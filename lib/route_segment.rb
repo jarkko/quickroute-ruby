@@ -1,4 +1,6 @@
 class RouteSegment
+  EPSILON = 0.001
+
   attr_accessor :route, :last_time
   attr_reader :waypoints
 
@@ -40,5 +42,36 @@ class RouteSegment
 
   def index
     @route.segments.index(self)
+  end
+
+  def parameterized_location_from_time(time)
+    lower, upper = 0, waypoints.size - 1
+
+    # Binary search to find the closest waypoint
+    while lower <= upper
+      idx = lower + (upper - lower) / 2
+      currtime = waypoints[idx].time
+      if (time - currtime).abs < EPSILON
+        return ParameterizedLocation.new(index, idx)
+      end
+
+      if time < currtime
+        upper = idx - 1
+      else
+        lower = idx + 1
+      end
+    end
+
+    t0 = waypoints[upper].time
+    t1 = waypoints[lower].time
+    if t1 == t0
+      return ParameterizedLocation.new(index, upper)
+    end
+
+    ParameterizedLocation.new(index, upper + (time - t0) / (t1 - t0))
+  end
+
+  def has_time?(time)
+    ((waypoints.first.time - EPSILON)..(waypoints.last.time + EPSILON)).include?(time)
   end
 end
