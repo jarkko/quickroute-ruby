@@ -12,5 +12,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~>2.7.0'
   s.add_runtime_dependency 'bindata', '~>1.4.3'
   s.add_runtime_dependency 'binary_search', '~>0.2.0'
-  spec.required_ruby_version = '>= 1.9.2'
+  s.required_ruby_version = '>= 1.9.2'
 end
