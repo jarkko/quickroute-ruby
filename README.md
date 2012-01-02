@@ -9,7 +9,7 @@ Parses the GPS data embedded to JPEG files output by [QuickRoute](http://www.mat
     gem install quickroute
 
 
-**Note!** Only works in Ruby >1.9.2
+**Note!** Only works in Ruby >=1.9.2
 
 ## Usage
 
